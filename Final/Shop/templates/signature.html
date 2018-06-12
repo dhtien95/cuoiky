@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form class="ui form" action="#" method="post" enctype="multipart/form-data">
+     {% csrf_token %}
+     {% for field in form %}
+          <div class="inline field">
+              {{ field.errors }}
+              {{ field.label_tag }}{{ field }}
+          </div>
+     {% endfor %}
+     <input class="ui button primary" type="submit" value="Get Signature" />
+</form>
+{% if msg %}
+    <br> <br> <br>
+    <fieldset style="border: 1px solid black; font-size: 1.3em;">
+        <legend style="border: 1px black solid;margin-left: 1em; padding: 0.2em 0.8em;font-weight:bold; ">Signature</legend>
+        <div class="ui container" style="padding: 10px 3em; line-height:1.6;">
+            File Name: {{ file_name }} <br>
+            Signature: [{{ msg }}]
+        </div>
+    </fieldset>
+{% endif %}
+
+{% endblock %}

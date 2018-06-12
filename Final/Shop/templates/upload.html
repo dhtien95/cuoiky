@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form class="ui form" action="#" method="post" enctype="multipart/form-data" >
+     {% csrf_token %}
+     {% for field in form %}
+          <div class="inline field">
+              {{ field.errors }}
+              {{ field.label_tag }}{{ field }}
+          </div>
+     {% endfor %}
+     <input type="submit" value="Upload" />
+</form>
+<script>
+     function getFileInfo(){
+          name = document.getElementById('id_myFile').files[0].name;
+          var author= "";
+          if (name.split(' - ').length > 0 ){
+               author= name.split(' - ')[1].split('.',1)[0];
+               name= name.split(' - ')[0];
+          }
+          var name_field = document.getElementById('id_name');
+          var author_field = document.getElementById('id_author');
+          name_field.value = name;
+          author_field.value = author;
+     }
+
+</script>
+{% endblock %}

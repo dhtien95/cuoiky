@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+
+{% block javascript %}
+<script type="text/javascript">
+    function get_signature(e, song_id) {
+        var click_box = $(e.target).closest("td");
+        $.ajax({
+            url: click_box.attr("get-signature-url"),
+            method: 'GET', // or another (GET), whatever you need
+            data: {
+                //'song_id': song_id, // data you need to pass to your function
+                click: true
+            },
+            success: function (data) {
+                alert("Signature is: " + data)
+                // success callback
+                // you can process data returned by function from views.py
+            }
+        });
+    }
+
+
+    function play_audio(audio){
+        $("audio").each(function(){
+            if( this != audio){
+                this.pause(); // Stop playing
+                this.currentTime = 0; // Reset time
+            }
+        });
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+
+{% if songs|length > 0 %}
+<table class="ui celled striped table">
+    <thead>
+    <tr>
+        <th colspan="4" style="background-color: #fbbd08;">
+            SHOP MP3
+            {% if user and user.is_superuser %}
+            <div class="ui right floated small primary labeled icon button"
+                        onclick="window.location.replace('{% url 'upload' %}');" >
+                <i class="upload icon"></i> Upload
+            </div>
+            {% endif %}
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for song in songs %}
+        <tr>
+            <td class="collapsing">
+                <i class="dollar icon"></i> {{ song.price }}
+            </td>
+            <td>
+                <i class="music icon"></i>{{ song.name }} -  {{ song.author }}
+            </td>
+            <td>
+                <audio controls {% if song.name in user_name_songs %} controlsList="nodownload" {% endif %} onplay="play_audio(this)">
+                    <source src="{{ song.link }}" type="audio/mp3">
+                </audio>
+            </td>
+            <td class="collapsing ui center aligned" id="signature-{{ song.id }}" get-signature-url="{% url 'ajax_signature' song.id %}">
+                {% if song.name in user_name_songs %}
+                    <button class="ui button tiny" onclick="get_signature(event, '{{ song.id }}')">
+                        <i class="certificate icon"></i> See Signature
+                    </button>
+                {% else %}
+                    <button class="ui button tiny yellow" onclick="location.href = '{% url 'buy_song' song.id%}';">
+                        <i class="money bill alternate outline icon"></i> Get now!
+                    </button>
+                {% endif %}
+
+                <!--<a href="/download/{{ song.id }}?return_url={{ request.path }}"> <i class="cloud download icon"></i> </a>-->
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% endblock %}
